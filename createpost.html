@@ -1,0 +1,194 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+
+    <script>//we can not to make confg without this two lines SDK</script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    
+
+<script>
+
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAjnND_PwjEA3o9h34patoFeiog2Tj4YLY",
+  authDomain: "apitask-1ac5d.firebaseapp.com",
+  databaseURL: "https://apitask-1ac5d-default-rtdb.firebaseio.com",
+  projectId: "apitask-1ac5d",
+  storageBucket: "apitask-1ac5d.appspot.com",
+  messagingSenderId: "615928378959",
+  appId: "1:615928378959:web:ab92d7f0e160a953a59c3a"
+};
+
+
+//THIS IS TO FIREBASE
+firebase.initializeApp(firebaseConfig);
+
+const database = firebase.database();
+
+
+</script>
+
+    <form action="" onsubmit="handleData()"  id="myform">
+
+
+        <label for="POST">POST</label>
+ <input type="text" ID="POST" NAME="POST">
+
+<input type="submit">
+
+    </form>
+
+
+
+
+    <div id="toShowPosts"></div>
+<script>
+
+
+
+
+
+//IT IS important to use sdk to create firebase 
+
+
+
+///THI IS TO DATABASE 
+
+
+
+
+
+
+function handleData(){
+
+
+   event.preventDefault();
+   let form=document.getElementById("myform");
+
+let postValue =form.POST.value ;
+
+
+
+let obj={
+
+
+    post :postValue
+};
+
+
+
+
+// THIS HOW WE ADD DATA TO REALTIMEDATABASE 
+ database.ref('POSTCOLLECTION').push(obj)   //here will create collection/node in firebase  called postcollection 
+
+ .then(()=>{
+
+    console.log("done" );
+
+ })
+
+ .catch(()=>{
+
+
+    console.log("can not to add this ")
+
+ })
+
+console.log( "this is obj after push "+obj);
+
+//may be this code does not work or no thing will add to firebase just go to 
+// firebasse website thi rules and be sure that this code true not false value 
+
+
+// {
+//   /* Visit https://firebase.google.com/docs/database/security to learn more about security rules. */
+//   "rules": {
+//     ".read":"true",
+//     ".write": "true"
+
+//   }
+// }
+
+
+
+
+
+
+}
+</script>
+ 
+<!-- //HERE TO GET DATA FROM FIRBASE  -->
+ 
+ <SCript>
+
+
+function upDate(key, oldValue){
+        var newValue = prompt("Enter Another Post To Update:", oldValue);
+        if (newValue) {
+            let updates = {};
+            updates['/POSTCOLLECTION/' + key + '/post'] = newValue;
+            database.ref().update(updates)
+                .then(() => {
+                    console.log('Update successful');
+                })
+                .catch((error) => {
+                    console.error('Update failed:', error);
+                });
+        }
+    }
+
+let divPosts=document.getElementById("toShowPosts");
+
+
+
+function deleteItem(key){
+        database.ref('POSTCOLLECTION/' + key).remove()
+            .then(() => {
+                console.log('Delete successful');
+            })
+            .catch((error) => {
+                console.error('Delete failed:', error);
+            });
+    }
+// TO GET DATA FROM DATABASE WE WILL NEED ON OR ONCE 
+
+function toGetData()
+{
+
+database.ref('POSTCOLLECTION').on("value",snapshot =>{
+    
+let data=snapshot.val();
+let postsHtml = "";
+
+if (data) {
+    Object.keys(data).forEach(key => {
+        const dataPost = data[key].post;
+
+        // ensures that each post is added to the existing string, rather than overwriting it.
+        postsHtml += `<p>${dataPost}</p>  <button onclick="upDate('${key}')">UPDATE</button><button onclick="deleteItem('${key}')">DELETE</button>`;
+    });
+
+    document.getElementById("toShowPosts").innerHTML = postsHtml;
+
+}
+
+
+})
+
+
+
+}
+ 
+window.onload=toGetData;
+ </SCript>
+
+
+</body>
+
+</html>
